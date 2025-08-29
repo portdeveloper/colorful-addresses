@@ -1,0 +1,30 @@
+{
+  "name": "emojified",
+  "version": "1.0.0",
+  "description": "A React component for visually distinguishing Ethereum addresses using emoji patterns",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest",
+    "dev": "tsc --watch"
+  },
+  "keywords": ["ethereum", "address", "emoji", "react", "crypto", "web3", "visualization"],
+  "author": "",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": ">=16.8.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.0.0",
+    "typescript": "^5.0.0",
+    "jest": "^29.0.0",
+    "@types/jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "jest-environment-jsdom": "^29.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "react": "^18.0.0"
+  }
+}

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emojified Demo</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { 
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace; 
+            padding: 20px; 
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        .demo-item { 
+            margin-bottom: 15px; 
+            padding: 10px; 
+            background: #f8f9fa; 
+            border-radius: 4px; 
+        }
+        .comparison { 
+            border: 2px solid #007bff; 
+            padding: 15px; 
+            margin: 20px 0; 
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Inline the library code for demo
+        const EMOJI_SET = [
+            '🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐸', '🐵',
+            '🦁', '🐯', '🐨', '🐮', '🐷', '🐸', '🦄', '🐧', '🦅', '🐙',
+            '🍎', '🍊', '🍋', '🍌', '🍇', '🍓', '🥝', '🍑', '🥕', '🌽',
+            '🍕', '🍔', '🌮', '🍦', '🍪', '🎂', '☕', '🍺', '🥤', '🍷',
+            '⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🎱', '🎮', '🎲', '🎯',
+            '🚗', '🚕', '🚙', '🚌', '🚎', '🏎️', '🚲', '🛴', '🛵', '🏍️',
+            '⭐', '✨', '🌟', '💫', '⚡', '🔥', '💧', '❄️', '🌈', '🎈',
+            '🎪', '🎨', '🎭', '🎪', '🎊', '🎉', '🎁', '🏆', '🥇', '🏅',
+            '🏔️', '⛰️', '🌋', '🏖️', '🏝️', '🏞️', '🏟️', '🏛️', '🏗️', '🏘️',
+            '🌅', '🌄', '🌠', '🎡', '🎢', '🎠', '⛲', '🌉', '🗽', '🏰'
+        ];
+
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function getEmojiAtIndex(hash, offset) {
+            const index = (hash + offset * 12345) % EMOJI_SET.length;
+            return EMOJI_SET[index];
+        }
+
+        function generateEmojiPattern(address) {
+            const cleanAddress = address.toLowerCase().replace(/^0x/, '');
+            const hash = simpleHash(cleanAddress);
+            
+            const emoji1 = getEmojiAtIndex(hash, 0);
+            const emoji2 = getEmojiAtIndex(hash, 1);
+            const emoji3 = getEmojiAtIndex(hash, 2);
+            
+            return `${emoji1}${emoji2}${emoji3}`;
+        }
+
+        function isValidEthereumAddress(address) {
+            if (!address || typeof address !== 'string') return false;
+            const cleanAddress = address.replace(/^0x/, '');
+            if (cleanAddress.length !== 40) return false;
+            return /^[a-fA-F0-9]{40}$/.test(cleanAddress);
+        }
+
+        function formatAddress(address, showFullAddress = false) {
+            if (!showFullAddress && address.length >= 42) {
+                return `${address.slice(0, 6)}...${address.slice(-4)}`;
+            }
+            return address;
+        }
+
+        const Emojified = ({ address, showFullAddress = false, spacing = ' ', style, className }) => {
+            if (!isValidEthereumAddress(address)) {
+                return React.createElement('span', { className, style }, `${address} ❌⚠️❓`);
+            }
+
+            const formattedAddress = formatAddress(address, showFullAddress);
+            const emojiPattern = generateEmojiPattern(address);
+
+            return React.createElement('span', { className, style }, `${formattedAddress}${spacing}${emojiPattern}`);
+        };
+
+        function Demo() {
+            const addresses = [
+                '0x1234567890123456789012345678901234567890',
+                '0x1234567890123456789012345678901234567891', // Only 1 char different!
+                '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
+                '0x0000000000000000000000000000000000000001',
+                '0xfffffffffffffffffffffffffffffffffffff',
+            ];
+
+            return (
+                <div>
+                    <h1>🎨 Emojified Address Demo</h1>
+                    <p>Visually distinguish Ethereum addresses using emoji patterns!</p>
+                    
+                    <h2>📝 Truncated Addresses (Default)</h2>
+                    {addresses.map((address, index) => (
+                        <div key={index} className="demo-item">
+                            <Emojified address={address} />
+                        </div>
+                    ))}
+
+                    <h2>📋 Full Addresses</h2>
+                    {addresses.map((address, index) => (
+                        <div key={index} className="demo-item">
+                            <Emojified address={address} showFullAddress={true} />
+                        </div>
+                    ))}
+
+                    <h2>🎨 Custom Styling</h2>
+                    <div className="demo-item">
+                        <Emojified 
+                            address={addresses[0]}
+                            style={{ 
+                                backgroundColor: '#e3f2fd', 
+                                padding: '8px', 
+                                borderRadius: '4px',
+                                fontSize: '18px',
+                                border: '1px solid #2196f3'
+                            }}
+                            spacing="   "
+                        />
+                    </div>
+
+                    <h2>❌ Invalid Address Handling</h2>
+                    <div className="demo-item">
+                        <Emojified address="0xinvalid" />
+                    </div>
+                    <div className="demo-item">
+                        <Emojified address="0x123" />
+                    </div>
+
+                    <div className="comparison">
+                        <h2>🔍 Similar Addresses Comparison</h2>
+                        <p><strong>Problem:</strong> These addresses differ by only 1 character (last digit):</p>
+                        <div className="demo-item">
+                            <strong>Address A:</strong> <Emojified address="0x1234567890123456789012345678901234567890" />
+                        </div>
+                        <div className="demo-item">
+                            <strong>Address B:</strong> <Emojified address="0x1234567890123456789012345678901234567891" />
+                        </div>
+                        <p><strong>Solution:</strong> Notice how different the emoji patterns are! 🎉</p>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(React.createElement(Demo), document.getElementById('root'));
+    </script>
+</body>
+</html>
