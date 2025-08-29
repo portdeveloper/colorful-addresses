@@ -1,29 +1,66 @@
 import { EMOJI_SET } from './emojiSet';
 
-function simpleHash(str: string): number {
-  let hash = 0;
+function fnv1aHash(str: string): number {
+  let hash = 2166136261;
   for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash;
+    hash ^= str.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
   }
-  return Math.abs(hash);
+  return hash >>> 0;
 }
 
-function getEmojiAtIndex(hash: number, offset: number): string {
-  const index = (hash + offset * 12345) % EMOJI_SET.length;
+function murmurhash3(str: string, seed: number = 0): number {
+  let h1 = seed >>> 0;
+  let k1;
+  
+  for (let i = 0; i < str.length; i++) {
+    k1 = str.charCodeAt(i);
+    k1 = Math.imul(k1, 0xcc9e2d51);
+    k1 = (k1 << 15) | (k1 >>> 17);
+    k1 = Math.imul(k1, 0x1b873593);
+    
+    h1 ^= k1;
+    h1 = (h1 << 13) | (h1 >>> 19);
+    h1 = Math.imul(h1, 5) + 0xe6546b64;
+  }
+  
+  h1 ^= str.length;
+  h1 ^= h1 >>> 16;
+  h1 = Math.imul(h1, 0x85ebca6b);
+  h1 ^= h1 >>> 13;
+  h1 = Math.imul(h1, 0xc2b2ae35);
+  h1 ^= h1 >>> 16;
+  
+  return h1 >>> 0;
+}
+
+function getEmojiForPosition(address: string, position: number): string {
+  const primes = [97, 101, 103, 107];
+  const salt = primes[position];
+  
+  const fullHash = fnv1aHash(address + salt.toString());
+  const segmentHash = murmurhash3(address.slice(position * 6, position * 6 + 16), position * 1009);
+  
+  const combinedHash = (fullHash * salt) ^ (segmentHash * primes[(position + 1) % 4]);
+  const index = Math.abs(combinedHash) % EMOJI_SET.length;
+  
   return EMOJI_SET[index];
 }
 
 export function generateEmojiPattern(address: string): string {
   const cleanAddress = address.toLowerCase().replace(/^0x/, '');
-  const hash = simpleHash(cleanAddress);
   
-  const emoji1 = getEmojiAtIndex(hash, 0);
-  const emoji2 = getEmojiAtIndex(hash, 1);
-  const emoji3 = getEmojiAtIndex(hash, 2);
+  if (cleanAddress.length < 32) {
+    const paddedAddress = cleanAddress.padStart(40, '0');
+    return generateEmojiPattern('0x' + paddedAddress);
+  }
   
-  return `${emoji1}${emoji2}${emoji3}`;
+  const emoji1 = getEmojiForPosition(cleanAddress, 0);
+  const emoji2 = getEmojiForPosition(cleanAddress, 1);
+  const emoji3 = getEmojiForPosition(cleanAddress, 2);
+  const emoji4 = getEmojiForPosition(cleanAddress, 3);
+  
+  return `${emoji1}${emoji2}${emoji3}${emoji4}`;
 }
 
 export function isValidEthereumAddress(address: string): boolean {
