@@ -1,7 +1,7 @@
 {
   "name": "emojified",
   "version": "1.0.2",
-  "description": "Production-ready emoji patterns for Ethereum addresses with <0.01% collision rates",
+  "description": "Beta emoji patterns for Ethereum addresses visualization",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

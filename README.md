@@ -1,6 +1,6 @@
 # 🎯 Emojified
 
-**Production-ready emoji patterns for Ethereum addresses with <0.01% collision rates**
+**Emoji patterns for Ethereum addresses**
 
 [![npm version](https://badge.fury.io/js/emojified.svg)](https://www.npmjs.com/package/emojified)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -11,7 +11,7 @@ Transform hard-to-distinguish Ethereum addresses into memorable 4-emoji patterns
 
 ## ✨ Features
 
-- **🔥 Production Ready**: <0.01% collision rates, tested with millions of addresses
+- **🎯 Beta Quality**: Collision rates and reliability testing ongoing
 - **⚡ High Performance**: 70,000+ operations per second
 - **🎨 Visual Recognition**: 4-emoji patterns for instant address identification
 - **🛡️ Cryptographically Strong**: 92.1% avalanche effect, enterprise-grade
@@ -97,7 +97,7 @@ React component that displays emoji pattern with optional address.
 
 ## 📊 Algorithm Quality
 
-Our production-ready algorithm has been extensively tested:
+Our beta algorithm has been tested:
 
 - **Collision Rate**: <0.01% (1 collision per 10,000+ addresses)
 - **Entropy**: 7.88 bits per position (235+ unique emojis per position)
