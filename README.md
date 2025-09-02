@@ -7,6 +7,8 @@
 
 Transform hard-to-distinguish Ethereum addresses into memorable 4-emoji patterns for better UX and reduced errors.
 
+> ⚠️ **Beta Software**: This library is in beta and may behave unexpectedly. While extensively tested, there is a possibility of emoji pattern collisions. Use with appropriate caution in production environments.
+
 ## ✨ Features
 
 - **🔥 Production Ready**: <0.01% collision rates, tested with millions of addresses
